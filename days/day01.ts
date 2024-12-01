@@ -33,21 +33,14 @@ export function partTwo(input: string) {
   return calculateSimilarityScore(left, right);
 }
 
-// Example Input and Tests
-if (import.meta.main) {
-  const example = Deno.readTextFileSync(`data/examples/01.txt`);
-  console.log("Example Result Part One:\n", partOne(example));
-  console.log("Example Result Part Two:\n", partTwo(example));
-}
-
 import { assertEquals } from "@std/assert";
 
 Deno.test("Part One", () => {
-  const example = Deno.readTextFileSync(`data/inputs/day01.txt`);
-  assertEquals(partOne(example), null); // Replace null with expected result for Part One
+  const example = Deno.readTextFileSync(`data/examples/day01.txt`);
+  assertEquals(partOne(example), 11);
 });
 
 Deno.test("Part Two", () => {
-  const example = Deno.readTextFileSync(`data/inputs/day01.txt`);
-  assertEquals(partTwo(example), null); // Replace null with expected result for Part Two
+  const example = Deno.readTextFileSync(`data/examples/day01.txt`);
+  assertEquals(partTwo(example), 31); // Replace null with expected result for Part Two
 });

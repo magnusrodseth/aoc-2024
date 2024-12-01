@@ -34,6 +34,9 @@ deno task download 1
 
 # Solve puzzles for day 1
 deno task solve 1
+
+# Run tests for day 1
+deno task test days/day01.ts
 ```
 
 ## 📂 Folder Structure
@@ -61,6 +64,7 @@ deno task solve 1
 - Use `download` to fetch inputs and puzzles.
 - Write and test your solutions in the generated files.
 - Use `solve` to run and verify your answers.
+- Use `test` to run tests on example data for a specific day.
 
 ## 👋🏽 Developer Information
 

@@ -1,8 +1,9 @@
 {
   "tasks": {
     "scaffold": "deno run --allow-write --allow-read ./scripts/scaffold.ts",
-    "solve": "deno run --allow-read ./scripts/solve.ts",
-    "download": "deno run --allow-read --allow-env --allow-run --allow-write ./scripts/download.ts"
+    "solve": "deno bench --allow-read scripts/solve.ts -- ",
+    "download": "deno run --allow-read --allow-env --allow-run --allow-write ./scripts/download.ts",
+    "test": "deno test --allow-read"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.8",

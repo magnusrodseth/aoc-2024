@@ -11,11 +11,11 @@ export function partTwo(input: string) {
 import { assertEquals } from "@std/assert";
 
 Deno.test("Part One", () => {
-  const result = Deno.readTextFileSync(`data/examples/day%DAY_NUMBER%.txt`);
+  const result = Deno.readTextFileSync(`data/examples/day02.txt`);
   assertEquals(partOne(result), null); // Replace null with expected result for Part One
 });
 
 Deno.test("Part Two", () => {
-  const result = Deno.readTextFileSync(`data/examples/day%DAY_NUMBER%.txt`);
+  const result = Deno.readTextFileSync(`data/examples/day02.txt`);
   assertEquals(partTwo(result), null); // Replace null with expected result for Part Two
 });
