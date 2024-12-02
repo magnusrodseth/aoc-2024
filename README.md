@@ -35,8 +35,8 @@ deno task download 1
 # Solve puzzles for day 1
 deno task solve 1
 
-# Run tests for day 1
-deno task test days/day01.ts
+# Run tests on example data for day 1
+deno task test 1
 ```
 
 ## 📂 Folder Structure
