@@ -1,2 +1,5 @@
 !data/inputs/.gitkeep
 data/inputs/**
+
+!data/examples/.gitkeep
+data/examples/**
