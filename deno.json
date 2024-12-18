@@ -1,7 +1,7 @@
 {
   "tasks": {
     "scaffold": "deno run --allow-write --allow-read ./scripts/scaffold.ts",
-    "solve": "deno bench --allow-read scripts/solve.ts -- ",
+    "solve": "deno bench --allow-read --allow-write scripts/solve.ts -- ",
     "download": "deno run --allow-read --allow-env --allow-run --allow-write ./scripts/download.ts",
     "test": "deno run --allow-read --allow-run scripts/test.ts"
   },
