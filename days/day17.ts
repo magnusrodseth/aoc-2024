@@ -1,47 +1,62 @@
+type Program = number[];
+type RegisterName = "A" | "B" | "C";
+
+enum OpCode {
+  DIV_A = 0, // adv - DIV A, A, COM
+  XOR_B_IMM = 1, // bxl - XOR B, IMM
+  MOV_B = 2, // bst - MOV B, (COM % 8)
+  JNZ = 3, // jnz - JNZ IMM
+  XOR_B_C = 4, // bxc - XOR B, C
+  OUTPUT = 5, // out - WRITE (COM % 8)
+  DIV_B = 6, // bdv - DIV B, A, COM
+  DIV_C = 7, // cdv - DIV C, A, COM
+}
+
 interface Computer {
   registers: { A: number; B: number; C: number };
   ip: number;
   output: number[];
 }
 
-function executeInstruction(computer: Computer, program: number[]): boolean {
+function executeInstruction(computer: Computer, program: Program): boolean {
   if (computer.ip >= program.length) return false;
 
-  const opcode = program[computer.ip];
+  const opcode = program[computer.ip] as OpCode;
   const operand = program[computer.ip + 1];
+  const value = getComboValue(computer, operand);
 
   switch (opcode) {
-    case 0: // adv
-      computer.registers.A = Math.trunc(
-        computer.registers.A / Math.pow(2, getComboValue(computer, operand))
+    case OpCode.DIV_A:
+      computer.registers.A = Math.floor(
+        computer.registers.A / Math.pow(2, value)
       );
       break;
-    case 1: // bxl
-      computer.registers.B ^= operand;
+    case OpCode.XOR_B_IMM:
+      computer.registers.B ^= operand; // Note: uses operand directly
       break;
-    case 2: // bst
-      computer.registers.B = getComboValue(computer, operand) & 7;
+    case OpCode.MOV_B:
+      computer.registers.B = value & 7;
       break;
-    case 3: // jnz
+    case OpCode.JNZ:
       if (computer.registers.A !== 0) {
-        computer.ip = operand;
+        computer.ip = operand; // Note: uses operand directly
         return true;
       }
       break;
-    case 4: // bxc
+    case OpCode.XOR_B_C:
       computer.registers.B ^= computer.registers.C;
       break;
-    case 5: // out
-      computer.output.push(getComboValue(computer, operand) & 7);
+    case OpCode.OUTPUT:
+      computer.output.push(value & 7);
       break;
-    case 6: // bdv
-      computer.registers.B = Math.trunc(
-        computer.registers.A / Math.pow(2, getComboValue(computer, operand))
+    case OpCode.DIV_B:
+      computer.registers.B = Math.floor(
+        computer.registers.A / Math.pow(2, value)
       );
       break;
-    case 7: // cdv
-      computer.registers.C = Math.trunc(
-        computer.registers.A / Math.pow(2, getComboValue(computer, operand))
+    case OpCode.DIV_C:
+      computer.registers.C = Math.floor(
+        computer.registers.A / Math.pow(2, value)
       );
       break;
   }
@@ -59,7 +74,7 @@ function getComboValue(computer: Computer, operand: number): number {
 }
 
 function execute(
-  program: number[],
+  program: Program,
   initialA = 0,
   initialB = 0,
   initialC = 0
@@ -75,44 +90,58 @@ function execute(
   return computer.output;
 }
 
-export function partOne(input: string): string {
+function parseProgram(input: string): {
+  program: Program;
+  registers: Computer["registers"];
+} {
   const [state, prog] = input.split("\n\nProgram: ");
 
-  const regA = parseInt(state.match(/Register A: (\d+)/)?.[1] || "0");
-  const regB = parseInt(state.match(/Register B: (\d+)/)?.[1] || "0");
-  const regC = parseInt(state.match(/Register C: (\d+)/)?.[1] || "0");
+  const registers = {
+    A: parseInt(state.match(/Register A: (\d+)/)?.[1] || "0"),
+    B: parseInt(state.match(/Register B: (\d+)/)?.[1] || "0"),
+    C: parseInt(state.match(/Register C: (\d+)/)?.[1] || "0"),
+  };
 
   const program = prog
     .trim()
     .split(/[,\s]+/)
     .map(Number);
 
-  return execute(program, regA, regB, regC).join(",");
+  return { program, registers };
+}
+
+export function partOne(input: string): string {
+  const { program, registers } = parseProgram(input);
+  return execute(program, registers.A, registers.B, registers.C).join(",");
 }
 
 export function partTwo(input: string): number {
-  const [_, prog] = input.split("\n\nProgram: ");
-  const program = prog
-    .trim()
-    .split(/[,\s]+/)
-    .map(Number);
+  const { program } = parseProgram(input);
 
-  let result = 0;
-  // Work backwards through the program
-  for (let len = program.length - 1; len >= 0; len--) {
-    // For each position, multiply by 8 (since outputs are mod 8)
-    result *= 8;
-    const targetOutput = program.slice(len).join(",");
+  function solve(a: number, i: number): number {
+    const output = execute(program, a);
+    const targetOutput = program.slice(program.length - i);
 
-    // Try values until we find one that matches
-    while (true) {
-      const output = execute(program, result).join(",");
-      if (output === targetOutput) break;
-      result++;
+    // If we found the complete match
+    if (output.join(",") === program.join(",")) {
+      return a;
     }
+
+    // If this is the start or we match the suffix
+    if (i === 0 || output.slice(-i).join(",") === targetOutput.join(",")) {
+      // Try all possible next digits (0-7 since output is mod 8)
+      for (let ni = 0; ni < 8; ni++) {
+        const result = solve(8 * a + ni, i + 1);
+        if (result > 0) {
+          return result;
+        }
+      }
+    }
+
+    return 0;
   }
 
-  return result;
+  return solve(0, 0);
 }
 
 import { assertEquals } from "@std/assert";
