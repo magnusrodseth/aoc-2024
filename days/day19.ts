@@ -1,12 +1,26 @@
-export function partOne(input: string) {
-  const [patternsStr, designsStr] = input.split("\n\n");
-  const patterns = patternsStr.split(", ").map((p) => p.trim());
-  const designs = designsStr
-    .split("\n")
-    .map((d) => d.trim())
-    .filter(Boolean);
+// Common types
+type Pattern = string;
+type Design = string;
 
-  function canMakeDesign(design: string, availablePatterns: string[]): boolean {
+// Helper function for parsing input
+function parseInput(input: string) {
+  const [patternsStr, designsStr] = input.split("\n\n");
+  return {
+    patterns: patternsStr.split(", ").map((p) => p.trim()),
+    designs: designsStr
+      .split("\n")
+      .map((d) => d.trim())
+      .filter(Boolean),
+  };
+}
+
+export function partOne(input: string) {
+  const { patterns, designs } = parseInput(input);
+
+  function canMakeDesign(
+    design: Design,
+    availablePatterns: Pattern[]
+  ): boolean {
     // Base case: if design is empty, we've successfully matched everything
     if (design === "") return true;
 
@@ -30,17 +44,12 @@ export function partOne(input: string) {
 }
 
 export function partTwo(input: string) {
-  const [patternsStr, designsStr] = input.split("\n\n");
-  const patterns = patternsStr.split(", ").map((p) => p.trim());
-  const designs = designsStr
-    .split("\n")
-    .map((d) => d.trim())
-    .filter(Boolean);
+  const { patterns, designs } = parseInput(input);
 
   function countWaysToMakeDesign(
-    design: string,
-    availablePatterns: string[],
-    memo: Map<string, number> = new Map()
+    design: Design,
+    availablePatterns: Pattern[],
+    memo: Map<Design, number> = new Map()
   ): number {
     // Check if we've already computed this design
     if (memo.has(design)) {
